@@ -1,2 +1,2 @@
 # Praktikum
-Alle Projekte, die ich bei meinem Schülerpraktikum bei [braintower](braintower.de) gemacht habe.
+Alle Projekte, die ich bei meinem Schülerpraktikum bei [braintower](https://braintower.de) gemacht habe.
