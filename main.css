@@ -1,0 +1,32 @@
+input {
+    margin: .2em .2em .2em 1.5em;
+    width: 20em !important;
+}
+
+form {
+    margin-top: 1.5em;
+}
+
+
+h3 {
+    margin-top: 1em;
+    margin-left: .5em;
+}
+
+.infobox {
+    margin: .8em;
+    padding: 1em;
+    background-color: rgba(19,255,0,0.38);
+    border-radius: .8em;
+    font-size: 1em !important;
+    font-weight: 600;
+}
+
+.errorbox {
+    margin: .8em;
+    padding: 1em;
+    background-color: rgba(255,6,0,0.38);
+    border-radius: .8em;
+    font-size: 1em !important;
+    font-weight: 600;
+}
