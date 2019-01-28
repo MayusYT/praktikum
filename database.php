@@ -83,14 +83,13 @@ function select() {
         $pw = $row['passwort'];
         $name = $row['vorname'];
         $lastname = $row['nachname'];
-
         echo "<tr>";
-            echo "<td>".$name."</td>";
-            echo "<td>".$lastname."</td>";
-            echo "<td>".$email."</td>";
-            echo "<td>".$pw."</td>";
+            echo "<td id='".$id."_name'>".$name."</td>";
+            echo "<td id='".$id."_lastname'>".$lastname."</td>";
+            echo "<td id='".$id."_email'>".$email."</td>";
+            echo "<td id='".$id."_pw'>".$pw."</td>";
             // TODO: Edit button: Alle werte der row POSTen, ggf. mit AJAX
-            echo "<td><form action=\"database.php\" method=\"post\"><input type='submit' class='edit' name=''><img alt='edit' src='img/edit.svg' style='height: .8em; margin-right: .4em;'></form><img alt='del' src='img/trashcan.svg' style='height: .8em;' onclick='location.href=\"/Praktikum/database.php?id=".$id."\"'></td>";
+            echo "<td><img onclick='replaceTextWithInputs(".$id.")' alt='edit' src='img/edit.svg' style='height: .8em; margin-right: .4em;'><img alt='del' src='img/trashcan.svg' style='height: .8em;' onclick='location.href=\"/Praktikum/database.php?id=".$id."\"'></td>";
         echo "</tr>";
 
     }
@@ -101,8 +100,8 @@ function echoForm() {
     echo "<form action=\"database.php\" method=\"post\">
         <input class=\"form-control\" placeholder=\"Vorname\" type=\"text\" name=\"vname\" required=\"required\"/> <br>
         <input class=\"form-control\" placeholder=\"Nachname\" type=\"text\" name=\"nname\" required=\"required\"/> <br>
-        <input class=\"form-control\" placeholder=\"E-Mail\" type=\"text\" name=\"email\" required=\"required\"/> <br>
-        <input class=\"form-control\" placeholder=\"Passwort\" type=\"text\" name=\"pw\" required=\"required\"/> <br>
+        <input class=\"form-control\" placeholder=\"E-Mail\" type=\"email\" name=\"email\" required=\"required\"/> <br>
+        <input class=\"form-control\" placeholder=\"Passwort\" type=\"password\" name=\"pw\" required=\"required\"/> <br>
         <input type=\"submit\" class=\"btn btn-outline-primary\" name=\"insert\" value=\"Hinzufügen\" /> <br>
         </form>";
 }
@@ -111,8 +110,8 @@ function echoFormPreDefined($vorname, $nachname, $email, $pw) {
     echo "<form action=\"database.php\" method=\"post\">
         <input class=\"form-control\" placeholder=\"Vorname\" value='$vorname' type=\"text\" name=\"vname\" required=\"required\"/> <br>
         <input class=\"form-control\" placeholder=\"Nachname\" value='$nachname' type=\"text\" name=\"nname\" required=\"required\"/> <br>
-        <input class=\"form-control\" placeholder=\"E-Mail\" value='$email' type=\"text\" name=\"email\" required=\"required\"/> <br>
-        <input class=\"form-control\" placeholder=\"Passwort\" value='$pw' type=\"text\" name=\"pw\" required=\"required\"/> <br>
+        <input class=\"form-control\" placeholder=\"E-Mail\" value='$email' type=\"email\" name=\"email\" required=\"required\"/> <br>
+        <input class=\"form-control\" placeholder=\"Passwort\" value='$pw' type=\"password\" name=\"pw\" required=\"required\"/> <br>
         <input type=\"submit\" class=\"btn btn-outline-primary\" name=\"insert\" value=\"Updaten\" /> <br>
         </form>";
 }
@@ -122,12 +121,16 @@ function insert($name, $lastname, $email, $pw) {
         $conn = initSQL();
         $sql = "INSERT INTO users (email, passwort, vorname, nachname) VALUES ('$email', '$pw', '$name', '$lastname')";
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        if(emailAlreadyInUse($email, $conn)) {
+            echo "<div class='errorbox'>> email already in use</div>";
+            return;
+        }
         $conn->exec($sql);
         echo "<div class='infobox'>> New record created successfully</div>";
 
     } catch(PDOException $e) {
 
-        echo $sql . "<br>" . $e->getMessage();
+        echo "<div class='errorbox'>> An error occured: <br>".$e->getMessage()."</div>";
 
     }
 }
@@ -142,7 +145,7 @@ function drop($id) {
         $conn->exec($sql);
         echo "<div class='infobox'>> Record dropped successfully</div>";
     } catch(PDOException $e) {
-        echo "<div class='errorbox'>> An error occured: <br>".$sql . "<br>" . $e->getMessage()."</div>";
+        echo "<div class='errorbox'>> An error occured: <br>".$e->getMessage()."</div>";
     }
 }
 
@@ -157,10 +160,20 @@ function update($id, $name, $lastname, $email, $pw) {
         echo "<div class='infobox'>> New record created successfully</div>";
 
     } catch(PDOException $e) {
-        echo "<div class='errorbox'>> An error occured: <br>".$sql . "<br>" . $e->getMessage()."</div>";
+        echo "<div class='errorbox'>> An error occured: <br>".$e->getMessage()."</div>";
     }
 }
 
+function emailAlreadyInUse($email, $conn) {
+    $result = $conn->query("SELECT 1 FROM users WHERE email='$email'");
+    if($result->fetchColumn() == 0) {
+        return false;
+    } else {
+        return true;
+    }
+
+
+}
 ?>
 
 <script>
@@ -186,6 +199,43 @@ function update($id, $name, $lastname, $email, $pw) {
                 //bad request
             }
         });
+    }
+
+    function replaceTextWithInputs(id) {
+        // #64_name
+        // #456_lastname
+        // #12_email
+        let namelabel = document.getElementById(id + "_name").innerText;
+        let lastnamelabel = document.getElementById(id + "_lastname").innerText;
+        let email = document.getElementById(id + "_email").innerText;
+        let pw = document.getElementById(id + "_pw").innerText;
+
+        alert(namelabel + lastnamelabel + email + pw);
+        // Hide it
+        namelabel.style.display = "none";
+
+        // Get its text
+        text = namelabel.innerHTML;
+
+        // Create an input
+        input = document.createElement("input");
+        input.type = "text";
+        input.value = text;
+        input.size = Math.max(text.length / 4 * 3, 4);
+        namelabel.parentNode.insertBefore(input, namelabel);
+
+        // Focus it, hook blur to undo
+        input.focus();
+        input.onblur = function() {
+            // Remove the input
+            namelabel.parentNode.removeChild(input);
+
+            // Update the namelabel
+            namelabel.innerHTML = input.value == "" ? "&nbsp;" : input.value;
+
+            // Show the namelabel again
+            namelabel.style.display = "";
+        };
     }
 
 </script>
