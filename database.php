@@ -3,12 +3,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <link rel="stylesheet" href="main.css" />
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 
 <?php
 $pdo = new PDO('mysql:host=localhost;dbname=test', 'root', 'test');
 
+
+// INSERT
 if (isset($_POST['vname']) and isset($_POST['nname']) and isset($_POST['email']) and isset($_POST['pw']) and isset($_POST['insert'])) {
     $vorname = $_POST['vname'];
     $nachname = $_POST['nname'];
@@ -19,16 +21,22 @@ if (isset($_POST['vname']) and isset($_POST['nname']) and isset($_POST['email'])
 
     echo "<h3>Eintrag hinzufügen:</h3>";
     echoForm();
+
+// EDIT
 } elseif (isset($_GET['id']) and isset($_POST['vname']) and isset($_POST['nname']) and isset($_POST['email']) and isset($_POST['pw']) and isset($_POST['edit'])) {
     $vorname = $_POST['vname'];
     $nachname = $_POST['nname'];
     $email = $_POST['email'];
     $passwort = $_POST['pw'];
-    insert($vorname, $nachname, $email, $passwort);
+    $id = $_POST['id'];
+
+    update($id, $vorname, $nachname, $email, $passwort);
     $pdo = closeSQL();
 
     echo "<h3>Eintrag updaten:</h3>";
     echoFormPreDefined($vorname, $nachname, $email, $passwort);
+
+// DROP
 }  elseif (isset($_GET['id'])) {
 
     $id = $_GET['id'];
@@ -37,6 +45,8 @@ if (isset($_POST['vname']) and isset($_POST['nname']) and isset($_POST['email'])
 
     echo "<h3>Eintrag hinzufügen:</h3>";
     echoForm();
+
+// Alles andere
 } else {
     echo "<h3>Eintrag hinzufügen:</h3>";
     echoForm();
@@ -79,7 +89,7 @@ function select() {
             echo "<td>".$lastname."</td>";
             echo "<td>".$email."</td>";
             echo "<td>".$pw."</td>";
-            echo "<td><img alt='edit' src='img/edit.svg' style='height: .8em; margin-right: .4em;'><img alt='del' src='img/trashcan.svg' style='height: .8em;' onclick='location.href=\"/Praktikum/database.php?id=".$id."\"'></td>";
+            echo "<td><form action=\"database.php\" method=\"post\"><input type='submit' class='edit' name=''><img alt='edit' src='img/edit.svg' style='height: .8em; margin-right: .4em;'></form><img alt='del' src='img/trashcan.svg' style='height: .8em;' onclick='location.href=\"/Praktikum/database.php?id=".$id."\"'></td>";
         echo "</tr>";
 
     }
@@ -149,3 +159,32 @@ function update($id, $name, $lastname, $email, $pw) {
         echo "<div class='errorbox'>> An error occured: <br>".$sql . "<br>" . $e->getMessage()."</div>";
     }
 }
+
+?>
+
+<script>
+
+    function sendData(){
+        //get the input value
+        let $someInput = $('#someInput').val();
+        $.ajax({
+            //the url to send the data to
+            url: "ajax/url.ajax.php",
+            //the data to send to
+            data: {someInput : $someInput},
+            //type. for eg: GET, POST
+            type: "POST",
+            //datatype expected to get in reply form server
+            dataType: "json",
+            //on success
+            success: function(data){
+                //do something after something is recieved from php
+            },
+            //on error
+            error: function(){
+                //bad request
+            }
+        });
+    }
+
+</script>
