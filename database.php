@@ -89,6 +89,7 @@ function select() {
             echo "<td>".$lastname."</td>";
             echo "<td>".$email."</td>";
             echo "<td>".$pw."</td>";
+            // TODO: Edit button: Alle werte der row POSTen, ggf. mit AJAX
             echo "<td><form action=\"database.php\" method=\"post\"><input type='submit' class='edit' name=''><img alt='edit' src='img/edit.svg' style='height: .8em; margin-right: .4em;'></form><img alt='del' src='img/trashcan.svg' style='height: .8em;' onclick='location.href=\"/Praktikum/database.php?id=".$id."\"'></td>";
         echo "</tr>";
 
