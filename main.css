@@ -1,4 +1,4 @@
-input {
+.input {
     margin: .2em .2em .2em 1.5em;
     width: 20em !important;
 }
@@ -23,7 +23,6 @@ h3 {
 }
 
 .errorbox {
-    width: 10em !important;
     margin: .8em;
     padding: 1em;
     background-color: rgba(255,6,0,0.38);
@@ -31,4 +30,16 @@ h3 {
     font-size: 1em !important;
     font-weight: 600;
 
+}
+
+.updatebtn {
+    background-image: url("img/check.svg");
+    background-size: cover;
+    border: none;
+    width: .8em;
+    height: .8em;
+    cursor: pointer;
+    color: transparent;
+    margin-right: .4em;
+    margin-top: .6em;
 }
